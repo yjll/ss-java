@@ -62,15 +62,13 @@ public class BioApplication {
         InputStream localInputStream = socket.getInputStream();
         OutputStream localOutputStream = socket.getOutputStream();
 
-        // step 1
-        log.info("======握手开始========");
+        // step1  握手
         readData = getBytesFromInputStream(localInputStream);
         localOutputStream.write(new byte[]{0x05, 0x00});
 
-        // step 2
-        log.info("========Step2=========");
+        // step2 连接目标服务器
         readData = getBytesFromInputStream(localInputStream);
-        // 打印域名
+
         Socks5Utils.parseAddr(readData);
         localOutputStream.write(new byte[]{0x05, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x10, 0x10});
         // 连接远程服务器
@@ -81,6 +79,7 @@ public class BioApplication {
         byte[] bytesData = Arrays.copyOfRange(readData, 3, readData.length);
         remoteOutputStream.write(cryptHelper.encrypt(bytesData));
 
+        // step3 发送Http报文
         readData = getBytesFromInputStream(localInputStream);
         log.info("HTTP报文:\n{}", new String(readData));
         remoteOutputStream.write(cryptHelper.encrypt(readData));
