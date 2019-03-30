@@ -27,13 +27,17 @@ import java.util.List;
 public class BioApplication {
 
 
-    private static SSConfig ssConfig = ConfigFactory.getDefaultSSConfig();
+    private SSConfig ssConfig;
 
-    private static ThreadLocal<CryptHelper> cryptHelperThreadLocal = ThreadLocal.withInitial(
+    public BioApplication(SSConfig ssConfig) {
+        this.ssConfig = ssConfig;
+    }
+
+    private ThreadLocal<CryptHelper> cryptHelperThreadLocal = ThreadLocal.withInitial(
             () -> new CryptHelper(CryptFactory.get(ssConfig.getMethod(), ssConfig.getPassword())));
 
-    public static void main(String[] args) throws IOException {
 
+    public void execute() throws IOException {
         log.info("starting server at port {}", ssConfig.getLocalPort());
 
         ServerSocket serverSocket = new ServerSocket(ssConfig.getLocalPort());
@@ -56,7 +60,7 @@ public class BioApplication {
         }
     }
 
-    private static void handle(Socket socket) throws Exception {
+    private void handle(Socket socket) throws Exception {
         CryptHelper cryptHelper = cryptHelperThreadLocal.get();
         byte[] readData;
         InputStream localInputStream = socket.getInputStream();
@@ -92,7 +96,7 @@ public class BioApplication {
         localOutputStream.flush();
     }
 
-    private static byte[] getBytesFromInputStream(InputStream is) throws IOException {
+    private byte[] getBytesFromInputStream(InputStream is) throws IOException {
         List<Byte> list = new ArrayList<>();
         byte[] tmp = new byte[8 * 1024];
         int read2;

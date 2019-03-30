@@ -1,6 +1,5 @@
 package com.yjll.ss.nio;
 
-import com.yjll.ss.utils.ConfigFactory;
 import com.yjll.ss.utils.SSConfig;
 import lombok.extern.slf4j.Slf4j;
 
@@ -10,7 +9,8 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.util.*;
+import java.util.Iterator;
+import java.util.Objects;
 
 /**
  * @author: zijing
@@ -20,9 +20,14 @@ import java.util.*;
 @Slf4j
 public class NioApplication {
 
-    private static final SSConfig ssConfig = ConfigFactory.getDefaultSSConfig();
+    private SSConfig ssConfig;
 
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public NioApplication(SSConfig ssConfig) {
+        this.ssConfig = ssConfig;
+    }
+
+    public void execute() throws IOException {
+
         log.info("starting server at port {}", ssConfig.getLocalPort());
 
         Selector selector = Selector.open();
@@ -44,7 +49,7 @@ public class NioApplication {
 
                 if (!selectionKey.isValid()) continue;
 
-//                // 第一次
+                // 第一次
                 if (selectionKey.isAcceptable()) {
                     ServerSocketChannel channel = (ServerSocketChannel) selectionKey.channel();
                     SocketChannel socketChannel = channel.accept();
@@ -56,8 +61,6 @@ public class NioApplication {
                         channelHandler.handle(selectionKey);
                     }
                 }
-
-
             }
         }
 
