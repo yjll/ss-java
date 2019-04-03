@@ -3,7 +3,6 @@ package com.yjll.ss.bio;
 
 import com.google.common.primitives.Bytes;
 import com.yjll.ss.encryption.CryptFactory;
-import com.yjll.ss.utils.ConfigFactory;
 import com.yjll.ss.encryption.CryptHelper;
 import com.yjll.ss.utils.SSConfig;
 import com.yjll.ss.utils.Socks5Utils;
@@ -17,6 +16,8 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * @author: zijing
@@ -26,6 +27,7 @@ import java.util.List;
 @Slf4j
 public class BioApplication {
 
+    private static ExecutorService executorService = Executors.newCachedThreadPool();
 
     private SSConfig ssConfig;
 
@@ -43,7 +45,7 @@ public class BioApplication {
         ServerSocket serverSocket = new ServerSocket(ssConfig.getLocalPort());
         while (true) {
             Socket socket = serverSocket.accept();
-            new Thread(() -> {
+            executorService.submit(() -> {
                 try {
                     handle(socket);
                 } catch (Exception e) {
@@ -56,7 +58,7 @@ public class BioApplication {
                         e.printStackTrace();
                     }
                 }
-            }).start();
+            });
         }
     }
 

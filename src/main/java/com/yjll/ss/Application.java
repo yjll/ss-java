@@ -17,8 +17,8 @@ import java.io.IOException;
 public class Application {
     public static void main(String[] args) {
         SSConfig ssConfig = ConfigFactory.getSsConfigFromResources();
-//        BioApplication app = new BioApplication(ssConfig);
-        NioApplication app = new NioApplication(ssConfig);
+        BioApplication app = new BioApplication(ssConfig);
+//        NioApplication app = new NioApplication(ssConfig);
         try {
             app.execute();
         } catch (IOException e) {
