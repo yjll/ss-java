@@ -19,7 +19,7 @@ public class Socks5Utils {
 			byte domainLength = readData[DOMAIN_LENGTH_INDEX];
 			String domain = new String(Arrays.copyOfRange(readData, DOMAIN_INDEX, DOMAIN_INDEX + domainLength));
 			int port = new BigInteger(new byte[]{readData[DOMAIN_INDEX + domainLength], readData[DOMAIN_INDEX + 1 + domainLength]}).intValue();
-			log.info("target url and port {}:{}", domain, port);
+			log.debug("target url and port {}:{}", domain, port);
 		}
 	}
 

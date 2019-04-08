@@ -91,7 +91,7 @@ public class ChannelHandler {
             return;
         }
 
-        log.info("status:{},readData:\n{}", socksStage, new String(readData));
+        log.debug("status:{},readData:\n{}", socksStage, new String(readData));
 
         switch (socksStage) {
             /*
@@ -156,7 +156,7 @@ public class ChannelHandler {
             return;
         }
         byte[] decrypt = this.cryptHelper.decrypt(readData);
-        log.info("onRemoteRead:\n{}", new String(decrypt));
+        log.debug("onRemoteRead:\n{}", new String(decrypt));
         this.localSocketChannel.write(ByteBuffer.wrap(decrypt));
     }
 

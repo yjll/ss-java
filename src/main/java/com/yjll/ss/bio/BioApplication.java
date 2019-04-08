@@ -87,13 +87,13 @@ public class BioApplication {
 
         // step3 发送Http报文
         readData = getBytesFromInputStream(localInputStream);
-        log.info("HTTP报文:\n{}", new String(readData));
+        log.debug("HTTP报文:\n{}", new String(readData));
         remoteOutputStream.write(cryptHelper.encrypt(readData));
 
 
         byte[] bytes = getBytesFromInputStream(remoteInputStream);
         byte[] decrypt = cryptHelper.decrypt(bytes);
-        log.info("Response:\n{}", new String(decrypt));
+        log.debug("Response:\n{}", new String(decrypt));
         localOutputStream.write(decrypt);
         localOutputStream.flush();
     }
