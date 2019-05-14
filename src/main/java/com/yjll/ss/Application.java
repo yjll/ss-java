@@ -1,7 +1,6 @@
 package com.yjll.ss;
 
-import com.yjll.ss.bio.BioApplication;
-import com.yjll.ss.nio.NioApplication;
+import com.yjll.ss.client.bio.BioApplication;
 import com.yjll.ss.utils.ConfigFactory;
 import com.yjll.ss.utils.SSConfig;
 import lombok.extern.slf4j.Slf4j;

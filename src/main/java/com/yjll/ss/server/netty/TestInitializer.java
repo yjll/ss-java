@@ -1,4 +1,4 @@
-package com.yjll.ss.netty;
+package com.yjll.ss.server.netty;
 
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;

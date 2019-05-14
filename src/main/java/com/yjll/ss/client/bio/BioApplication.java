@@ -1,4 +1,4 @@
-package com.yjll.ss.bio;
+package com.yjll.ss.client.bio;
 
 
 import com.google.common.primitives.Bytes;

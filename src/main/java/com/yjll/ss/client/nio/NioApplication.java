@@ -1,4 +1,4 @@
-package com.yjll.ss.nio;
+package com.yjll.ss.client.nio;
 
 import com.yjll.ss.utils.SSConfig;
 import lombok.extern.slf4j.Slf4j;
