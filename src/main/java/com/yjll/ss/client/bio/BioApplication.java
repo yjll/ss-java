@@ -27,16 +27,13 @@ import java.util.concurrent.Executors;
 @Slf4j
 public class BioApplication {
 
-    private static ExecutorService executorService = Executors.newCachedThreadPool();
+    private static ExecutorService executorService = Executors.newFixedThreadPool(64);
 
     private SSConfig ssConfig;
 
     public BioApplication(SSConfig ssConfig) {
         this.ssConfig = ssConfig;
     }
-
-    private ThreadLocal<CryptHelper> cryptHelperThreadLocal = ThreadLocal.withInitial(
-            () -> new CryptHelper(CryptFactory.get(ssConfig.getMethod(), ssConfig.getPassword())));
 
 
     public void execute() throws IOException {
@@ -51,7 +48,6 @@ public class BioApplication {
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
-                    cryptHelperThreadLocal.remove();
                     try {
                         socket.close();
                     } catch (IOException e) {
@@ -63,20 +59,19 @@ public class BioApplication {
     }
 
     private void handle(Socket socket) throws Exception {
-        CryptHelper cryptHelper = cryptHelperThreadLocal.get();
+        CryptHelper cryptHelper = new CryptHelper(CryptFactory.get(ssConfig.getMethod(), ssConfig.getPassword()));
         byte[] readData;
         InputStream localInputStream = socket.getInputStream();
         OutputStream localOutputStream = socket.getOutputStream();
 
-        // step1  握手
+        // step1 握手
         readData = getBytesFromInputStream(localInputStream);
         localOutputStream.write(new byte[]{0x05, 0x00});
 
-        // step2 连接目标服务器
+        // step2 建立连接
         readData = getBytesFromInputStream(localInputStream);
 
         Socks5Utils.parseAddr(readData);
-        localOutputStream.write(new byte[]{0x05, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x10, 0x10});
         // 连接远程服务器
         Socket remote = new Socket(ssConfig.getServer(), ssConfig.getServerPort());
         OutputStream remoteOutputStream = remote.getOutputStream();
@@ -85,17 +80,17 @@ public class BioApplication {
         byte[] bytesData = Arrays.copyOfRange(readData, 3, readData.length);
         remoteOutputStream.write(cryptHelper.encrypt(bytesData));
 
+        localOutputStream.write(new byte[]{0x05, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x10, 0x10});
+
         // step3 发送Http报文
         readData = getBytesFromInputStream(localInputStream);
         log.debug("HTTP报文:\n{}", new String(readData));
         remoteOutputStream.write(cryptHelper.encrypt(readData));
 
-
         byte[] bytes = getBytesFromInputStream(remoteInputStream);
         byte[] decrypt = cryptHelper.decrypt(bytes);
         log.debug("Response:\n{}", new String(decrypt));
         localOutputStream.write(decrypt);
-        localOutputStream.flush();
     }
 
     private byte[] getBytesFromInputStream(InputStream is) throws IOException {
