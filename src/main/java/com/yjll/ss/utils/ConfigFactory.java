@@ -28,7 +28,7 @@ public class ConfigFactory {
     }
 
     public static SSConfig getSsConfigFromResources() {
-        String configFile = "config.json";
+        String configFile = "client.json";
         InputStream resourceAsStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(configFile);
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES);

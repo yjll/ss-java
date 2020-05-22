@@ -27,16 +27,16 @@ import java.util.concurrent.Executors;
 @Slf4j
 public class BioApplication {
 
-    private static ExecutorService executorService = Executors.newCachedThreadPool();
+    private static final ExecutorService executorService = Executors.newCachedThreadPool();
 
     private SSConfig ssConfig;
+
+    private final ThreadLocal<CryptHelper> cryptHelperThreadLocal = ThreadLocal.withInitial(
+            () -> new CryptHelper(CryptFactory.get(ssConfig.getMethod(), ssConfig.getPassword())));
 
     public BioApplication(SSConfig ssConfig) {
         this.ssConfig = ssConfig;
     }
-
-    private ThreadLocal<CryptHelper> cryptHelperThreadLocal = ThreadLocal.withInitial(
-            () -> new CryptHelper(CryptFactory.get(ssConfig.getMethod(), ssConfig.getPassword())));
 
 
     public void execute() throws IOException {
@@ -65,7 +65,9 @@ public class BioApplication {
     private void handle(Socket socket) throws Exception {
         CryptHelper cryptHelper = cryptHelperThreadLocal.get();
         byte[] readData;
+        // request
         InputStream localInputStream = socket.getInputStream();
+        // response
         OutputStream localOutputStream = socket.getOutputStream();
 
         // step1  握手
